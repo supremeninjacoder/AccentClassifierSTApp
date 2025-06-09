@@ -13,8 +13,8 @@ st.set_page_config(page_title="Accent Analyzer", page_icon="🗣️", layout="ce
 # App title and description
 st.title("🗣️ English Accent Analyzer")
 st.markdown("""
-    This tool analyzes the English accent from a public video URL.
-    Paste a link from YouTube, Loom, or a direct MP4 link to get started.
+    This tool analyzes the English accents from a public video URL.
+    Paste a link from YouTube, Loom or a direct MP4 link to get started.
 """)
 
 # --- Model Loading ---
@@ -113,21 +113,26 @@ if st.button("Analyze Accent"):
         with st.spinner("Analyzing... This may take a moment."):
             audio_file = download_audio(video_url)
             if audio_file:
-                accent, confidence = analyze_accent(audio_file)
-                if accent and confidence is not None:
+                # MODIFIED UI TO DISPLAY TOP 3 RESULTS
+                top_results = analyze_accent(audio_file)
+                if top_results:
                     st.success("Analysis Complete!")
-                    st.metric(label="Detected Accent", value=accent)
-                    st.metric(label="Confidence Score", value=f"{confidence:.2f}%")
+                    st.subheader("Top 3 Accent Predictions:")
 
-                    st.markdown("---")
-                    st.info(
-                        "**Explanation:**\n\n"
-                        "- **Detected Accent:** The most likely English accent identified in the audio.\n"
-                        "- **Confidence Score:** The model's confidence in its prediction."
-                    )
+                    # Create columns for a cleaner layout
+                    cols = st.columns(3)
+                    for i, result in enumerate(top_results):
+                        with cols[i]:
+                            st.metric(
+                                label=f"#{i+1} Accent",
+                                value=result['accent']
+                            )
+                            st.metric(
+                                label="Confidence",
+                                value=f"{result['confidence']:.2f}%"
+                            )
     else:
         st.warning("Please enter a video URL.")
-
 # Add a footer
 st.markdown("---")
 st.markdown("Developed by Jawad")
