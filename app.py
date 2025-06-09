@@ -61,13 +61,19 @@ def analyze_accent(audio_file):
         return None, None
 
     try:
-        # Resample the audio to 16kHz as required by the model
         signal, fs = torchaudio.load(audio_file)
+
+        # --- FIX: Convert stereo to mono ---
+        # Check if the audio is stereo (i.e., has 2 channels)
+        if signal.shape[0] > 1:
+            # Average the channels to create a mono signal
+            signal = torch.mean(signal, dim=0, keepdim=True)
+        # --- END FIX ---
+
         if fs != 16000:
             resampler = torchaudio.transforms.Resample(orig_freq=fs, new_freq=16000)
             signal = resampler(signal)
 
-        # Classify the accent
         out_prob, score, index, text_lab = classifier.classify_batch(signal)
         return text_lab[0], score.item() * 100
     except Exception as e:
@@ -76,7 +82,7 @@ def analyze_accent(audio_file):
     finally:
         if os.path.exists(audio_file):
             os.remove(audio_file)
-
+            
 # --- Streamlit UI ---
 video_url = st.text_input("Enter the public video URL:", placeholder="e.g., https://www.youtube.com/watch?v=...")
 
