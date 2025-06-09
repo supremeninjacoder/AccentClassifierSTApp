@@ -2,8 +2,8 @@
 
 A simple web application that analyzes the English accent from a public video URL. It extracts the audio, processes it through a machine learning model and displays the top 3 most likely accent predictions with their confidence scores.
 
-** Please Note That Audio is not trimmed to only 15 to 30 seconds but complete video audio is taken which if long can exceed the available 1GB memory in streamlit public cloud available
-causing the app to not function correctly (Use a small length video for testing - Also can function for a few tries and would require app reboot due to this) **
+**Please Note That Audio is not trimmed to only 15 to 30 seconds but complete video audio is taken which if long can exceed the available 1GB memory in streamlit public cloud available
+causing the app to not function correctly (Use a small length video for testing - Also can function for a few tries and would require app reboot due to this)**
 
 This project was built to demonstrate the practical application of audio processing and machine learning models in a user-friendly web interface.
 
