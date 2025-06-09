@@ -2,7 +2,8 @@ import streamlit as st
 import os
 import yt_dlp
 import librosa
-from speechbrain.pretrained import EncoderClassifier
+#from speechbrain.pretrained import EncoderClassifier
+from speechbrain.inference.classifiers import EncoderClassifier
 import torch
 import torchaudio
 
