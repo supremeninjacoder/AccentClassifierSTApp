@@ -55,34 +55,56 @@ def download_audio(video_url):
         return None
 
 def analyze_accent(audio_file):
-    """Analyzes the accent from an audio file."""
+    """Analyzes the accent from an audio file and returns the top 3 predictions."""
     if not classifier:
         st.error("Model not loaded. Cannot analyze accent.")
-        return None, None
+        return None
+
+    # This is the list of 16 accents the model was trained on, in order.
+    # We get this from the model's label_encoder.txt file on Hugging Face.
+    accent_labels = [
+        'African', 'Australian', 'Canadian', 'England', 'Hongkong', 'Indian',
+        'Irish', 'Malaysian', 'Newzealand', 'Northernireland', 'Philippines',
+        'Scottish', 'Singapore', 'Southatlandtic', 'US', 'Welsh'
+    ]
 
     try:
         signal, fs = torchaudio.load(audio_file)
 
-        # --- FIX: Convert stereo to mono ---
-        # Check if the audio is stereo (i.e., has 2 channels)
         if signal.shape[0] > 1:
-            # Average the channels to create a mono signal
             signal = torch.mean(signal, dim=0, keepdim=True)
-        # --- END FIX ---
 
         if fs != 16000:
             resampler = torchaudio.transforms.Resample(orig_freq=fs, new_freq=16000)
             signal = resampler(signal)
 
-        out_prob, score, index, text_lab = classifier.classify_batch(signal)
-        return text_lab[0], score.item() * 100
+        # Get the raw output probabilities from the model
+        out_prob, _, _, _ = classifier.classify_batch(signal)
+
+        # Apply softmax to get confidence scores as percentages
+        scores = F.softmax(out_prob, dim=-1) * 100
+
+        # Squeeze the tensor to remove unnecessary dimensions and convert to a simple list
+        scores_list = scores[0].tolist()
+
+        # Pair each label with its score
+        results = []
+        for label, score in zip(accent_labels, scores_list):
+            results.append({"accent": label, "confidence": score})
+
+        # Sort the results by confidence in descending order
+        sorted_results = sorted(results, key=lambda x: x['confidence'], reverse=True)
+
+        # Return the top 3
+        return sorted_results[:3]
+
     except Exception as e:
         st.error(f"Error analyzing accent: {e}")
-        return None, None
+        return None
     finally:
         if os.path.exists(audio_file):
             os.remove(audio_file)
-            
+
 # --- Streamlit UI ---
 video_url = st.text_input("Enter the public video URL:", placeholder="e.g., https://www.youtube.com/watch?v=...")
 
