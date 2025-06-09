@@ -6,7 +6,7 @@ import librosa
 from speechbrain.inference.classifiers import EncoderClassifier
 import torch
 import torchaudio
-
+import torch.nn.functional as F
 # Set page configuration
 st.set_page_config(page_title="Accent Analyzer", page_icon="🗣️", layout="centered")
 
