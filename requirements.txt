@@ -1,0 +1,8 @@
+streamlit
+torch
+torchaudio
+speechbrain
+huggingface_hub
+yt-dlp
+librosa
+ffmpeg-python
