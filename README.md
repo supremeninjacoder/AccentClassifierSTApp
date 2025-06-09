@@ -8,7 +8,7 @@ This project was built to demonstrate the practical application of audio process
 
 You can test the live application here:
 
-**[https://your-app-name.streamlit.app/](https://accentclassifierstapp.streamlit.app/)**
+**[https://accentclassifierstapp.streamlit.app/](https://accentclassifierstapp.streamlit.app/)**
 
 ## 📸 Screenshot
 
